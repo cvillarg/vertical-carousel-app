@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 
 <!--
 `<carousel-item>` description.
@@ -23,11 +25,41 @@ The following custom properties and mixins are available for styling:
 -->
 <dom-module id="carousel-item">
   <style>
-  /*your style here*/
+  :host {
+    display: block;
+    margin: 17px 0;
+  }
+  :host.red .content {
+    background-color: red;
+  }
+  :host.blue .content {
+    background-color: blue;
+  }
+  :host.green .content {
+    background-color: green;
+  }
+  paper-card {
+    width: 100%;
+  }
+  .content {
+    color: white;
+    height: 217px;
+    margin: 8px;
+    display: flex;
+  }
+  .content > * {
+    margin: auto;
+  }
   </style>
   <template>
     <paper-card elevation="2">
-      <h1>hello from carousel-item</h1>
+      <paper-item>
+        <paper-item-body two-line>
+          <div>[[title]]</div>
+          <div secondary>[[subtitle]]</div>
+        </paper-item-body>
+      </paper-item>
+      <div class="content"><span>[[content]]</span></div>
     </paper-card>
   </template>
   <script>
@@ -35,6 +67,11 @@ The following custom properties and mixins are available for styling:
     'use strict';
     Polymer({
       is: 'carousel-item',
+      properties:{
+        title: String,
+        subtitle: String,
+        content: String
+      }
     });
   })();
   </script>

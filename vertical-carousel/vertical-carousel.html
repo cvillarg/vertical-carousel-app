@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="carousel-item/carousel-item.html">
 
 <!--
 `<vertical-carousel>` description.
@@ -26,15 +26,23 @@ The following custom properties and mixins are available for styling:
   /*your style here*/
   </style>
   <template>
-    <paper-card elevation="2">
-      <h1>hello from vertical-carousel</h1>
-    </paper-card>
+    <template is="dom-repeat" items=[[items]]>
+      <carousel-item class$="[[item.color]]" title="[[item.title]]" subtitle="[[item.subtitle]]" content="[[item.content]]"></carousel-item>
+    </template>
   </template>
   <script>
   (function(){
     'use strict';
     Polymer({
       is: 'vertical-carousel',
+      properties: {
+        items: {
+          type: Array,
+          value: function(){
+            return [];
+          }
+        }
+      }
     });
   })();
   </script>

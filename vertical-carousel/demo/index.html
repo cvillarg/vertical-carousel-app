@@ -9,6 +9,31 @@
     <link rel="import" href="../vertical-carousel.html">
   </head>
   <body>
-    <vertical-carousel></vertical-carousel>
+    <template is="dom-bind" id="demo">
+      <vertical-carousel items=[[items]]></vertical-carousel>
+    </template>
+    <script type="text/javascript">
+      var demo = document.getElementById('demo');
+      demo.items = [
+        {
+          title: 'Red Card',
+          subtitle: 'Awesome carousel-item',
+          color: 'red',
+          content: 'First Card'
+        },
+        {
+          title: 'Blue Card',
+          subtitle: 'Fantastic carousel-item',
+          color: 'blue',
+          content: 'Second Card'
+        },
+        {
+          title: 'Green Card',
+          subtitle: 'Amazing carousel-item',
+          color: 'green',
+          content: 'Third Card'
+        }
+      ]
+    </script>
   </body>
 </html>
