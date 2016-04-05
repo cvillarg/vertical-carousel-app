@@ -41,6 +41,14 @@ The following custom properties and mixins are available for styling:
     var midPoint;
     //var itemNodes;
 
+    // Thanks Mr Penner - http://robertpenner.com/easing/
+    function easeInOutQuad (t, b, c, d) {
+      t /= d / 2;
+      if ( t < 1 ) return c / 2 * t * t + b;
+      t--;
+      return -c / 2 * ( t * ( t -2 ) - 1 ) + b;
+    }
+
     'use strict';
     Polymer({
       is: 'vertical-carousel',
@@ -58,7 +66,7 @@ The following custom properties and mixins are available for styling:
       },
 
       listeners: {
-        'scroll': '_onScroll'
+        //'scroll': '_onScroll'
       },
 
       ready: function () {
@@ -78,23 +86,31 @@ The following custom properties and mixins are available for styling:
         var top = this.getBoundingClientRect().top;
         var bottom = this.getBoundingClientRect().bottom;
         midPoint = ((bottom+top)/2>>0);
+        this.listen(this, 'scroll', '_onScroll');
+      },
+
+      detached: function(){
+        this.unlisten(this, 'scroll', '_onScroll');
       },
 
       _onDebounce: function() {
         var firstCall = false; //lexical retention to be called once every two times
         return function(i, itemNodes) {
           this.debounce('doSomething', function () {
-            if (firstCall){
-              firstCall = false; //it's not firstCall hence reset counter
-            } else {
+            console.log('onDebounce');
+            // if (firstCall){
+            //   firstCall = false; //it's not firstCall hence reset counter
+            // } else {
               firstCall = true;
               var sum = 0;
               for (var j = 0; j < i; j++) {
                 sum += itemNodes[j].offsetHeight+17;
               }
-              console.log('do debounce! from', itemNodes[i].getBoundingClientRect().top, 'to', sum);
-              this.scrollTop = sum;
-            }
+              console.log('do debounce! from', this.scrollTop, 'to', sum);
+              //this.scrollTop = sum;
+              this.unlisten(this, 'scroll', '_onScroll');
+              this._elevator(this.scrollTop, sum);
+            //}
           }, 500);
         }.bind(this);
       },
@@ -111,10 +127,39 @@ The following custom properties and mixins are available for styling:
           this.currentItem = i;
           console.log('current item', i);
         }
-        //console.log('scroll', i);
+        console.log('scroll', i);
         onDebounce = onDebounce || this._onDebounce();
 
         onDebounce(i, itemNodes);
+      },
+
+      _elevator: function(from, to){
+        var duration = ( Math.abs(to - from) * 1.5);
+        requestAnimationFrame( this._animateLoop(from, to, duration) );
+      },
+
+      _animateLoop: function (startPosition, endPosition, duration){
+        var startTime;
+        return function aux (time) {
+          if ( !startTime ) {
+            startTime = time;
+          }
+
+          var timeSoFar = time - startTime;
+          var easedPosition = easeInOutQuad(timeSoFar, startPosition, endPosition - startPosition, duration);
+          console.log('scrolling from', startPosition, 'to', easedPosition, 'finish', endPosition);
+          this.scrollTop = easedPosition;
+
+          if( timeSoFar < duration ) {
+            requestAnimationFrame(aux.bind(this));
+          } else {
+            //animationFinished();
+            console.log('finished');
+            setTimeout(function(){
+              this.listen(this, 'scroll', '_onScroll');
+            }.bind(this),300);
+          }
+        }.bind(this);
       }
 
     });
