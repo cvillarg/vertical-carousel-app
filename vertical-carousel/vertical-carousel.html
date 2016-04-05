@@ -23,26 +23,100 @@ The following custom properties and mixins are available for styling:
 -->
 <dom-module id="vertical-carousel">
   <style>
-  /*your style here*/
+  :host{
+    display: block;
+    height: 300px;
+    overflow: auto;
+  }
   </style>
   <template>
-    <template is="dom-repeat" items=[[items]]>
-      <carousel-item class$="[[item.color]]" title="[[item.title]]" subtitle="[[item.subtitle]]" content="[[item.content]]"></carousel-item>
-    </template>
+      <template is="dom-repeat" items=[[items]]>
+        <carousel-item class$="[[item.color]]" title="[[item.title]]" subtitle="[[item.subtitle]]" content="[[item.content]]"></carousel-item>
+      </template>
   </template>
   <script>
   (function(){
+    /* I dont want these stuff inside Polymer */
+    var onDebounce; //to avoid jitter (be called after it changes scroll)
+    var midPoint;
+    //var itemNodes;
+
     'use strict';
     Polymer({
       is: 'vertical-carousel',
       properties: {
         items: {
           type: Array,
-          value: function(){
+          value: function() {
             return [];
           }
+        },
+        currentItem: {
+          type: Number,
+          value: 0
         }
+      },
+
+      listeners: {
+        'scroll': '_onScroll'
+      },
+
+      ready: function () {
+        // var that = Array.prototype.slice.call(this.childNodes).filter(function(item) { //doesnt work
+        //   console.log('item', item.localName);
+        //   return item.localName === 'carousel-item';
+        // });
+        //this.itemNodes = this.querySelectorAll('carousel-item');
+      },
+
+      attached: function(){
+        //console.log(this, this.querySelectorAll('carousel-item'), this.childNodes); //doesnt work
+        var that = Array.prototype.slice.call(this.childNodes)//.filter(function(item) {
+        //   console.log('item', item.localName);
+        //   return item.localName === 'carousel-item';
+        // });
+        var top = this.getBoundingClientRect().top;
+        var bottom = this.getBoundingClientRect().bottom;
+        midPoint = ((bottom+top)/2>>0);
+      },
+
+      _onDebounce: function() {
+        var firstCall = false; //lexical retention to be called once every two times
+        return function(i, itemNodes) {
+          this.debounce('doSomething', function () {
+            if (firstCall){
+              firstCall = false; //it's not firstCall hence reset counter
+            } else {
+              firstCall = true;
+              var sum = 0;
+              for (var j = 0; j < i; j++) {
+                sum += itemNodes[j].offsetHeight+17;
+              }
+              console.log('do debounce! from', itemNodes[i].getBoundingClientRect().top, 'to', sum);
+              this.scrollTop = sum;
+            }
+          }, 500);
+        }.bind(this);
+      },
+
+      _onScroll : function (e) {
+        var itemNodes = this.querySelectorAll('carousel-item');
+        //var top = this.getBoundingClientRect().top;
+        //var bottom = this.getBoundingClientRect().bottom;
+        var i = 0;
+        while(itemNodes[i].getBoundingClientRect().bottom < midPoint){
+          i++;
+        }
+        if ( this.currentItem != i ) { //dirty checking
+          this.currentItem = i;
+          console.log('current item', i);
+        }
+        //console.log('scroll', i);
+        onDebounce = onDebounce || this._onDebounce();
+
+        onDebounce(i, itemNodes);
       }
+
     });
   })();
   </script>
