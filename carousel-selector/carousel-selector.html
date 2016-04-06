@@ -23,18 +23,84 @@ The following custom properties and mixins are available for styling:
 -->
 <dom-module id="carousel-selector">
   <style>
-  /*your style here*/
+  :host{
+    display: block;
+    font-family: sans-serif;
+  }
+  paper-card {
+    width: 100%;
+    overflow: hidden;
+  }
+  .content {
+    /*big enough so there isn't break lines*/
+    width: 9000px;
+  }
+  .content div{
+    display: inline-flex;;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin: 10px;
+    cursor: pointer;
+  }
+  .content div.selected {
+    background-color: purple;
+    color: white;
+  }
+  div span{
+    margin: auto;
+  }
   </style>
   <template>
     <paper-card elevation="2">
-      <h1>hello from carousel-selector</h1>
+      <div class="content">
+        <template is="dom-repeat" items=[[indexItems]]>
+          <div on-tap="selectItem"><span>[[item]]</span></div>
+        </template>
+      </div>
     </paper-card>
   </template>
   <script>
-  (function(){
+  (function() {
     'use strict';
     Polymer({
       is: 'carousel-selector',
+
+      properties: {
+        numItems: Number,
+        indexItems: {
+          type: Array,
+          computed: '_generateIndex(numItems)'
+        },
+        selectedItem: {
+          type: Number,
+          notify: true,
+          observer: '_onItemSelectedChanged'
+        }
+      },
+      listeners: {
+          'dom-change': '_onDomChanged'
+      },
+
+      _generateIndex: function(numItems) {
+        return Array.apply(null, {length: numItems}).map(function(item, index) { return ++index; });
+      },
+
+      _onDomChanged: function(){
+        this.set('_itemNodes', this.querySelectorAll('.content div'));
+      },
+
+      selectItem: function(e){
+        this.set('selectedItem', e.model.item-1);
+      },
+
+      _onItemSelectedChanged: function(newValue, oldValue){
+        //var items = this.querySelectorAll('.content div');
+        this._itemNodes = this._itemNodes || [];
+        this.toggleClass('selected', true, this._itemNodes[newValue]);
+        this.toggleClass('selected', false, this._itemNodes[oldValue]);
+      }
     });
   })();
   </script>

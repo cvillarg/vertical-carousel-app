@@ -9,6 +9,9 @@
     <link rel="import" href="../carousel-selector.html">
   </head>
   <body>
-    <carousel-selector></carousel-selector>
+    <template is="dom-bind">
+      <carousel-selector num-items="17" selected-item="{{item}}"></carousel-selector>
+      <div>Selected Item: <span>[[item]]</span></div>
+    </template>
   </body>
 </html>
