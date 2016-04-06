@@ -36,11 +36,7 @@ The following custom properties and mixins are available for styling:
   </template>
   <script>
   (function(){
-    /* I dont want these stuff inside Polymer */
-    var onDebounce; //to avoid jitter (be called after it changes scroll)
-    var midPoint;
-    //var itemNodes;
-
+    'use strict';
     // Thanks Mr Penner - http://robertpenner.com/easing/
     function easeInOutQuad (t, b, c, d) {
       t /= d / 2;
@@ -49,7 +45,6 @@ The following custom properties and mixins are available for styling:
       return -c / 2 * ( t * ( t -2 ) - 1 ) + b;
     }
 
-    'use strict';
     Polymer({
       is: 'vertical-carousel',
       properties: {
@@ -67,25 +62,13 @@ The following custom properties and mixins are available for styling:
 
       listeners: {
         //'scroll': '_onScroll'
-      },
-
-      ready: function () {
-        // var that = Array.prototype.slice.call(this.childNodes).filter(function(item) { //doesnt work
-        //   console.log('item', item.localName);
-        //   return item.localName === 'carousel-item';
-        // });
-        //this.itemNodes = this.querySelectorAll('carousel-item');
+        'dom-change': '_onDomChanged'
       },
 
       attached: function(){
-        //console.log(this, this.querySelectorAll('carousel-item'), this.childNodes); //doesnt work
-        var that = Array.prototype.slice.call(this.childNodes)//.filter(function(item) {
-        //   console.log('item', item.localName);
-        //   return item.localName === 'carousel-item';
-        // });
         var top = this.getBoundingClientRect().top;
         var bottom = this.getBoundingClientRect().bottom;
-        midPoint = ((bottom+top)/2>>0);
+        this._midPoint = ((bottom+top)/2>>0);
         this.listen(this, 'scroll', '_onScroll');
       },
 
@@ -93,44 +76,35 @@ The following custom properties and mixins are available for styling:
         this.unlisten(this, 'scroll', '_onScroll');
       },
 
-      _onDebounce: function() {
-        var firstCall = false; //lexical retention to be called once every two times
-        return function(i, itemNodes) {
-          this.debounce('doSomething', function () {
-            console.log('onDebounce');
-            // if (firstCall){
-            //   firstCall = false; //it's not firstCall hence reset counter
-            // } else {
-              firstCall = true;
-              var sum = 0;
-              for (var j = 0; j < i; j++) {
-                sum += itemNodes[j].offsetHeight+17;
-              }
-              console.log('do debounce! from', this.scrollTop, 'to', sum);
-              //this.scrollTop = sum;
-              this.unlisten(this, 'scroll', '_onScroll');
-              this._elevator(this.scrollTop, sum);
-            //}
-          }, 500);
-        }.bind(this);
+      _onDomChanged: function(){
+        // console.log('<<',Polymer.dom(this.root).querySelectorAll('carousel-item'));
+        // console.log('<<',Polymer.dom(this.root).childNodes); //and filter
+        this._itemNodes = Polymer.dom(this.root).querySelectorAll('carousel-item');
+      },
+
+      _onDebounce: function(i) {
+        this.debounce('doSomething', function () {
+          var sum = 0;
+          for (var j = 0; j < i; j++) {
+            sum += this._itemNodes[j].offsetHeight+17;
+          }
+          console.log('do debounce! from', this.scrollTop, 'to', sum, 'reaching slide #', i);
+          this.unlisten(this, 'scroll', '_onScroll');
+          this._elevator(this.scrollTop, sum);
+        }, 500);
       },
 
       _onScroll : function (e) {
-        var itemNodes = this.querySelectorAll('carousel-item');
-        //var top = this.getBoundingClientRect().top;
-        //var bottom = this.getBoundingClientRect().bottom;
         var i = 0;
-        while(itemNodes[i].getBoundingClientRect().bottom < midPoint){
+        while(this._itemNodes[i].getBoundingClientRect().bottom < this._midPoint && i < this._itemNodes.length){
           i++;
         }
-        if ( this.currentItem != i ) { //dirty checking
+        if ( this.currentItem !== i ) { //dirty checking
           this.currentItem = i;
           console.log('current item', i);
         }
-        console.log('scroll', i);
-        onDebounce = onDebounce || this._onDebounce();
-
-        onDebounce(i, itemNodes);
+        //console.log('scroll', i);
+        this._onDebounce(i); //i would like to change the slide although the scroll is not enough to change it
       },
 
       _elevator: function(from, to){
@@ -147,7 +121,7 @@ The following custom properties and mixins are available for styling:
 
           var timeSoFar = time - startTime;
           var easedPosition = easeInOutQuad(timeSoFar, startPosition, endPosition - startPosition, duration);
-          console.log('scrolling from', startPosition, 'to', easedPosition, 'finish', endPosition);
+          //console.log('scrolling from', startPosition, 'to', easedPosition, 'finish', endPosition);
           this.scrollTop = easedPosition;
 
           if( timeSoFar < duration ) {
