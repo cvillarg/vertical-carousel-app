@@ -45,6 +45,14 @@ The following custom properties and mixins are available for styling:
       return -c / 2 * ( t * ( t -2 ) - 1 ) + b;
     }
 
+    function getScrollPosition(i, component){
+      var sum = 0;
+      for (var j = 0; j < i; j++) {
+        sum += component._itemNodes[j].offsetHeight+17;
+      }
+      return sum;
+    }
+
     Polymer({
       is: 'vertical-carousel',
       properties: {
@@ -56,7 +64,10 @@ The following custom properties and mixins are available for styling:
         },
         currentItem: {
           type: Number,
-          value: 0
+          value: 0,
+          //reflectToAttribute: true, //I don't need styling about that
+          notify: true,
+          observer: '_onItemChanged'
         }
       },
 
@@ -82,14 +93,15 @@ The following custom properties and mixins are available for styling:
         this._itemNodes = Polymer.dom(this.root).querySelectorAll('carousel-item');
       },
 
+      _onItemChanged: function(newValue, oldValue){
+        if (newValue !== oldValue)
+          this._elevator(this.scrollTop, getScrollPosition(newValue, this));
+      },
+
       _onDebounce: function(i) {
         this.debounce('doSomething', function () {
-          var sum = 0;
-          for (var j = 0; j < i; j++) {
-            sum += this._itemNodes[j].offsetHeight+17;
-          }
+          var sum = getScrollPosition(i, this);
           console.log('do debounce! from', this.scrollTop, 'to', sum, 'reaching slide #', i);
-          this.unlisten(this, 'scroll', '_onScroll');
           this._elevator(this.scrollTop, sum);
         }, 500);
       },
@@ -100,7 +112,7 @@ The following custom properties and mixins are available for styling:
           i++;
         }
         if ( this.currentItem !== i ) { //dirty checking
-          this.currentItem = i;
+          this.set('currentItem', i)
           console.log('current item', i);
         }
         //console.log('scroll', i);
@@ -108,6 +120,7 @@ The following custom properties and mixins are available for styling:
       },
 
       _elevator: function(from, to){
+        this.unlisten(this, 'scroll', '_onScroll');
         var duration = ( Math.abs(to - from) * 1.5);
         requestAnimationFrame( this._animateLoop(from, to, duration) );
       },

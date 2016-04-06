@@ -10,7 +10,8 @@
   </head>
   <body>
     <template is="dom-bind" id="demo">
-      <vertical-carousel items=[[items]]></vertical-carousel>
+      <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
+      <div>Selected item: <span>[[item]]</span></div>
     </template>
     <script type="text/javascript">
       var demo = document.getElementById('demo');
