@@ -20,12 +20,20 @@
         position:absolute;
         top: 0;
         right: 0;
-        bottom: 0;
+        bottom: 24px;
         left: 0;
       }
       vertical-carousel {
         /*height: 300px;*/
         height: calc(100% - 90px);
+      }
+      a {
+        font-family: monospace;
+        position: absolute;
+        bottom: 17px;
+        left: 0;
+        right: 0;
+        text-align: center;
       }
     </style>
   </head>
@@ -38,10 +46,6 @@
       <iron-ajax auto url="data/data.json" handle-as="json" last-response="{{items}}"></iron-ajax>
       <observer-url to-observe="{{item}}"></observer-url>
     </template>
-
-    <script type="text/javascript">
-      //to be completed
-
-    </script>
+    <a href="https://github.com/cvillarg/vertical-carousel-app">Fork me on GitHub</a>
   </body>
 </html>
