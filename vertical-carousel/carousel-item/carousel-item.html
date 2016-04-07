@@ -26,8 +26,12 @@ The following custom properties and mixins are available for styling:
 <dom-module id="carousel-item">
   <style>
   :host {
-    display: block;
-    margin: 17px 0;
+    /*display: block;
+    margin: 17px 0;*/
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
   }
   :host.red .content {
     background-color: red;
@@ -39,14 +43,18 @@ The following custom properties and mixins are available for styling:
     background-color: green;
   }
   paper-card {
-    width: 100%;
+    /*width: 100%;*/
+    width: 90%;
+    height: 60%;
   }
   .content {
-    width: 100%;
+    /*width: 100%;*/
     color: white;
-    height: 217px;
+    /*height: 217px;*/
     margin: 8px;
     display: flex;
+
+    height: calc(100% - 90px);
   }
   .content > * {
     margin: auto;

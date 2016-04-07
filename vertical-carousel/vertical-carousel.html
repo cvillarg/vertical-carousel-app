@@ -47,7 +47,7 @@ The following custom properties and mixins are available for styling:
     function getScrollPosition(i, component){
       var sum = 0;
       for (var j = 0; j < i; j++) {
-        sum += component._itemNodes[j].offsetHeight+17;
+        sum += component._itemNodes[j].offsetHeight;
       }
       return sum;
     }
@@ -114,7 +114,7 @@ The following custom properties and mixins are available for styling:
           var sum = getScrollPosition(i, this);
           console.log('do debounce! from', this.scrollTop, 'to', sum, 'reaching slide #', i);
           this._elevator(this.scrollTop, sum);
-        }, 500);
+        }, 224);
       },
 
       _onScroll : function (e) {

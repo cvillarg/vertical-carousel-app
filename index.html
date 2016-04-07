@@ -7,22 +7,29 @@
     <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="vertical-carousel/vertical-carousel.html">
     <link rel="import" href="carousel-selector/carousel-selector.html">
-    <style>
+    <style is="custom-style">
       html, body {
         width: 100%;
       }
-      div {
+      .carousel {
         width: 80%;
         margin: 0 auto;
+
+        position:absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
       }
       vertical-carousel {
-        height: 300px;
+        /*height: 300px;*/
+        height: calc(100% - 90px);
       }
     </style>
   </head>
   <body>
     <template is="dom-bind" id="app">
-      <div>
+      <div class="carousel">
         <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
         <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
       </div>
