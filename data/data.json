@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Red Card",
+    "subtitle": "Awesome carousel-item",
+    "color": "red",
+    "content": "First Card"
+  },
+  {
+    "title": "Blue Card",
+    "subtitle": "Fantastic carousel-item",
+    "color": "blue",
+    "content": "Second Card"
+  },
+  {
+    "title": "Green Card",
+    "subtitle": "Amazing carousel-item",
+    "color": "green",
+    "content": "Third Card"
+  }
+]
