@@ -112,9 +112,9 @@ The following custom properties and mixins are available for styling:
       _onDebounce: function(i) {
         this.debounce('doSomething', function () {
           var sum = getScrollPosition(i, this);
-          console.log('do debounce! from', this.scrollTop, 'to', sum, 'reaching slide #', i);
+          //console.log('do debounce! from (', this.currentItem ,')', this.scrollTop, 'to', sum, 'reaching slide #', i);
           this._elevator(this.scrollTop, sum);
-        }, 224);
+        }, 117);
       },
 
       _onScroll : function (e) {
@@ -125,17 +125,19 @@ The following custom properties and mixins are available for styling:
         }
         if ( this.currentItem !== i ) { //dirty checking
           this.set('currentItem', i)
-          console.log('current item', i);
+          console.log('changed item', i);
         }
         //console.log('scroll', i);
         this._onDebounce(i); //i would like to change the slide although the scroll is not enough to change it
       },
 
       _elevator: function(from, to){
-        console.log('unlisten elevator');
-        this.unlisten(this, 'scroll', '_onScroll');
-        var duration = ( Math.abs(to - from) * 1.5);
-        requestAnimationFrame( this._animateLoop(from, to, duration) );
+        if (from !== to) { //avoid jitter
+          console.log('unlisten elevator');
+          this.unlisten(this, 'scroll', '_onScroll');
+          var duration = ( Math.abs(to - from) * 1.5);
+          requestAnimationFrame( this._animateLoop(from, to, duration) );
+        }
       },
 
       _animateLoop: function (startPosition, endPosition, duration){
@@ -154,7 +156,7 @@ The following custom properties and mixins are available for styling:
             requestAnimationFrame(aux.bind(this));
           } else {
             //animationFinished();
-            console.log('finished');
+            //console.log('finished');
             setTimeout(function(){
               console.log('listen');
               this._itsMe = false;
