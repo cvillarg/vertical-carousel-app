@@ -89,6 +89,8 @@ The following custom properties and mixins are available for styling:
 
       _onDomChanged: function(){
         this.set('_itemNodes', this.querySelectorAll('.content div'));
+        //update the view, refresh the value again..
+        this._onItemSelectedChanged(this.selectedItem);
       },
 
       selectItem: function(e){

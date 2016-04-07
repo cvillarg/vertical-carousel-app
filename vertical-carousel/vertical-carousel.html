@@ -92,11 +92,19 @@ The following custom properties and mixins are available for styling:
         // console.log('<<',Polymer.dom(this.root).querySelectorAll('carousel-item'));
         // console.log('<<',Polymer.dom(this.root).childNodes); //and filter
         this._itemNodes = Polymer.dom(this.root).querySelectorAll('carousel-item');
+        //update the view
+        this.unlisten(this, 'scroll', '_onScroll');
+        this.scrollTop = getScrollPosition(this.currentItem, this);
+        //await to listen again to stop race conditions
+        setTimeout(function(){
+          this.listen(this, 'scroll', '_onScroll');
+        }.bind(this), 24);
       },
 
       _onItemChanged: function(newValue, oldValue){
         if (!this._itsMe && newValue !== oldValue && oldValue !== undefined) {
           console.log('onItemChanged');
+          this.unlisten(this, 'scroll', '_onScroll');
           this._elevator(this.scrollTop, getScrollPosition(newValue, this));
         }
       },
