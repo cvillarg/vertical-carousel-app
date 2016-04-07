@@ -9,9 +9,14 @@
     <link rel="import" href="carousel-selector/carousel-selector.html">
     <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
     <link rel="import" href="observer-url/observer-url.html">
+    <link rel="import" href="bower_components/firebase-element/firebase-collection.html">
     <style is="custom-style">
       html, body {
         width: 100%;
+        height: 100%;
+      }
+      body {
+        margin: 0;
       }
       .carousel {
         width: 80%;
@@ -20,32 +25,43 @@
         position:absolute;
         top: 0;
         right: 0;
-        bottom: 24px;
+        bottom: 0;
         left: 0;
       }
       vertical-carousel {
         /*height: 300px;*/
         height: calc(100% - 90px);
       }
-      a {
-        font-family: monospace;
-        position: absolute;
-        bottom: 17px;
-        left: 0;
-        right: 0;
+
+      section{
+        position: relative;
+        height: 94%;
+      }
+      footer{
         text-align: center;
+        padding: 10px;
+      }
+      footer a {
+        font-family: monospace;
       }
     </style>
   </head>
   <body>
-    <template is="dom-bind" id="app">
-      <div class="carousel">
-        <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
-        <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
-      </div>
-      <iron-ajax auto url="data/data.json" handle-as="json" last-response="{{items}}"></iron-ajax>
-      <observer-url to-observe="{{item}}"></observer-url>
-    </template>
-    <a href="https://github.com/cvillarg/vertical-carousel-app">Fork me on GitHub</a>
+    <section>
+      <template is="dom-bind" id="app">
+        <div class="carousel">
+          <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
+          <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
+        </div>
+        <firebase-collection
+          location="https://resplendent-heat-9951.firebaseio.com/"
+          data="{{items}}"></firebase-collection>
+        <!-- <iron-ajax auto url="data/data.json" handle-as="json" last-response="{{items}}"></iron-ajax> -->
+        <observer-url to-observe="{{item}}"></observer-url>
+      </template>
+    </section>
+    <footer>
+      <a href="https://github.com/cvillarg/vertical-carousel-app">Fork me on GitHub</a>
+    </footer>
   </body>
 </html>
