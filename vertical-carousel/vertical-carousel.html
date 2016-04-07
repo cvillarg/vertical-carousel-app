@@ -46,8 +46,10 @@ The following custom properties and mixins are available for styling:
 
     function getScrollPosition(i, component){
       var sum = 0;
-      for (var j = 0; j < i; j++) {
-        sum += component._itemNodes[j].offsetHeight;
+      if (component._itemNodes && component._itemNodes.length){ //avoid errors when this is undefined
+        for (var j = 0; j < i; j++) {
+          sum += component._itemNodes[j].offsetHeight;
+        }
       }
       return sum;
     }
@@ -103,7 +105,6 @@ The following custom properties and mixins are available for styling:
 
       _onItemChanged: function(newValue, oldValue){
         if (!this._itsMe && newValue !== oldValue && oldValue !== undefined) {
-          console.log('onItemChanged');
           this.unlisten(this, 'scroll', '_onScroll');
           this._elevator(this.scrollTop, getScrollPosition(newValue, this));
         }

@@ -98,10 +98,11 @@ The following custom properties and mixins are available for styling:
       },
 
       _onItemSelectedChanged: function(newValue, oldValue){
-        //var items = this.querySelectorAll('.content div');
         this._itemNodes = this._itemNodes || [];
-        this.toggleClass('selected', true, this._itemNodes[newValue]);
+        //order matters. think of old === newValue
         this.toggleClass('selected', false, this._itemNodes[oldValue]);
+        this.toggleClass('selected', true, this._itemNodes[newValue]);
+
       }
     });
   })();

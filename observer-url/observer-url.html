@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<script>
+(function() {
+  Polymer({
+    is: 'observer-url',
+
+    properties: {
+      toObserve: {
+        type: Number,
+        observer: '_onToObserveChanged',
+        notify: true
+      }
+    },
+
+    attached: function(){
+      window.onpopstate = this._onHistoryPopstate.bind(this);
+      console.log('at',window.location.href);
+      match = /\/(\d+)/.exec(window.location.href);
+      if (match)
+        this.set('toObserve', match[1]);
+    },
+
+    _onHistoryPopstate: function(e){
+      var state = e.state;
+      //console.log("location: " + document.location + ", state: " + state);
+      if (typeof state.current === 'number')
+        this.set('toObserve', state.current);
+    },
+
+    _onToObserveChanged: function(newValue, oldValue) {
+      if (oldValue !== undefined){
+        var stateObj = {
+          current: newValue,
+          old: oldValue
+        };
+        //console.log('change url!', stateObj);
+        history.pushState(stateObj, "slide " + newValue, newValue);
+      }
+    }
+  });
+})();
+</script>

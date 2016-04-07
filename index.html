@@ -8,6 +8,7 @@
     <link rel="import" href="vertical-carousel/vertical-carousel.html">
     <link rel="import" href="carousel-selector/carousel-selector.html">
     <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+    <link rel="import" href="observer-url/observer-url.html">
     <style is="custom-style">
       html, body {
         width: 100%;
@@ -30,15 +31,17 @@
   </head>
   <body>
     <template is="dom-bind" id="app">
-      <iron-ajax auto url="data/data.json" handle-as="json" last-response="{{items}}"></iron-ajax>
       <div class="carousel">
         <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
         <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
       </div>
+      <iron-ajax auto url="data/data.json" handle-as="json" last-response="{{items}}"></iron-ajax>
+      <observer-url to-observe="{{item}}"></observer-url>
     </template>
 
     <script type="text/javascript">
       //to be completed
+
     </script>
   </body>
 </html>
