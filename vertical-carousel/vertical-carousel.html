@@ -25,7 +25,6 @@ The following custom properties and mixins are available for styling:
   <style>
   :host{
     display: block;
-    height: 300px;
     overflow: auto;
   }
   </style>
@@ -80,10 +79,12 @@ The following custom properties and mixins are available for styling:
         var top = this.getBoundingClientRect().top;
         var bottom = this.getBoundingClientRect().bottom;
         this._midPoint = ((bottom+top)/2>>0);
+        console.log('listen attached');
         this.listen(this, 'scroll', '_onScroll');
       },
 
       detached: function(){
+        console.log('unlisten dettached');
         this.unlisten(this, 'scroll', '_onScroll');
       },
 
@@ -94,8 +95,10 @@ The following custom properties and mixins are available for styling:
       },
 
       _onItemChanged: function(newValue, oldValue){
-        if (newValue !== oldValue)
+        if (!this._itsMe && newValue !== oldValue && oldValue !== undefined) {
+          console.log('onItemChanged');
           this._elevator(this.scrollTop, getScrollPosition(newValue, this));
+        }
       },
 
       _onDebounce: function(i) {
@@ -107,6 +110,7 @@ The following custom properties and mixins are available for styling:
       },
 
       _onScroll : function (e) {
+        this._itsMe = true;
         var i = 0;
         while(this._itemNodes[i].getBoundingClientRect().bottom < this._midPoint && i < this._itemNodes.length){
           i++;
@@ -120,6 +124,7 @@ The following custom properties and mixins are available for styling:
       },
 
       _elevator: function(from, to){
+        console.log('unlisten elevator');
         this.unlisten(this, 'scroll', '_onScroll');
         var duration = ( Math.abs(to - from) * 1.5);
         requestAnimationFrame( this._animateLoop(from, to, duration) );
@@ -143,6 +148,8 @@ The following custom properties and mixins are available for styling:
             //animationFinished();
             console.log('finished');
             setTimeout(function(){
+              console.log('listen');
+              this._itsMe = false;
               this.listen(this, 'scroll', '_onScroll');
             }.bind(this),300);
           }
