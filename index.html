@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes" name="viewport">
+    <title>vertical-carousel-app Demo</title>
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="vertical-carousel/vertical-carousel.html">
+    <link rel="import" href="carousel-selector/carousel-selector.html">
+    <style>
+      html, body {
+        width: 100%;
+      }
+      div {
+        width: 80%;
+        margin: 0 auto;
+      }
+      vertical-carousel {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <template is="dom-bind" id="app">
+      <div>
+        <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
+        <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
+      </div>
+    </template>
+
+    <script type="text/javascript">
+      var app = document.getElementById('app');
+      app.items = [
+        {
+          title: 'Red Card',
+          subtitle: 'Awesome carousel-item',
+          color: 'red',
+          content: 'First Card'
+        },
+        {
+          title: 'Blue Card',
+          subtitle: 'Fantastic carousel-item',
+          color: 'blue',
+          content: 'Second Card'
+        },
+        {
+          title: 'Green Card',
+          subtitle: 'Amazing carousel-item',
+          color: 'green',
+          content: 'Third Card'
+        }
+      ]
+    </script>
+  </body>
+</html>
