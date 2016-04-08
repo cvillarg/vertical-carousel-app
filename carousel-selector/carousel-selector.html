@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
 
 <!--
 `<carousel-selector>` description.
@@ -35,19 +38,44 @@ The following custom properties and mixins are available for styling:
     /*big enough so there isn't break lines*/
     width: 9000px;
   }
-  .content div{
-    display: inline-flex;;
+
+  .content div, nav{
+    display: inline-flex;
     height: 50px;
     width: 50px;
-    border-radius: 50%;
-    background-color: #ccc;
-    margin: 10px;
+    margin: 10px 5px;
     cursor: pointer;
   }
+
+  .content div {
+    border-radius: 50%;
+    background-color: #ccc;
+  }
+
+  nav {
+    color: purple;
+    background-color: #cac;
+    position: relative;
+    top: 5px;
+    margin-right: 0;
+  }
+
+  nav:last-child{
+    background-color: #aac;
+    position: absolute;
+    right: 0;
+    margin-right: 10px;
+  }
+
+  nav iron-icon{
+    margin: auto;
+  }
+
   .content div.selected {
     background-color: purple;
     color: white;
   }
+
   div span{
     margin: auto;
   }
@@ -55,9 +83,11 @@ The following custom properties and mixins are available for styling:
   <template>
     <paper-card elevation="2">
       <div class="content">
+        <nav on-tap="selectPrevious"><iron-icon icon="arrow-back"></iron-icon></nav>
         <template is="dom-repeat" items=[[indexItems]]>
           <div on-tap="selectItem"><span>[[item]]</span></div>
         </template>
+        <nav on-tap="selectNext"><iron-icon icon="arrow-forward"></iron-icon></nav>
       </div>
     </paper-card>
   </template>
@@ -87,23 +117,33 @@ The following custom properties and mixins are available for styling:
         return Array.apply(null, {length: numItems}).map(function(item, index) { return ++index; });
       },
 
-      _onDomChanged: function(){
+      _onDomChanged: function() {
         this.set('_itemNodes', this.querySelectorAll('.content div'));
         //update the view, refresh the value again..
         this._onItemSelectedChanged(this.selectedItem);
       },
 
-      selectItem: function(e){
+      selectItem: function(e) {
         this.set('selectedItem', e.model.item-1);
       },
 
-      _onItemSelectedChanged: function(newValue, oldValue){
+      _onItemSelectedChanged: function(newValue, oldValue) {
         this._itemNodes = this._itemNodes || [];
         //order matters. think of old === newValue
         this.toggleClass('selected', false, this._itemNodes[oldValue]);
         this.toggleClass('selected', true, this._itemNodes[newValue]);
+      },
 
-      }
+      selectPrevious: function() {
+        this.set('selectedItem', this.selectedItem - 1 > -1 ?
+          this.selectedItem - 1 : this.selectedItem);
+      },
+
+      selectNext: function() {
+        this.set('selectedItem', this.selectedItem + 1 < this._itemNodes.length ?
+          this.selectedItem + 1 : this.selectedItem);
+      },
+
     });
   })();
   </script>
