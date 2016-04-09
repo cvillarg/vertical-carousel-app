@@ -101,6 +101,8 @@ The following custom properties and mixins are available for styling:
         setTimeout(function(){
           this.listen(this, 'scroll', '_onScroll');
         }.bind(this), 24);
+
+        this.fire('vertical-carousel-ready');
       },
 
       _onItemChanged: function(newValue, oldValue){

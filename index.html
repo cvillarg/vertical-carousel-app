@@ -10,6 +10,7 @@
     <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
     <link rel="import" href="observer-url/observer-url.html">
     <link rel="import" href="bower_components/firebase-element/firebase-collection.html">
+    <link rel="import" href="bower_components/paper-spinner/paper-spinner-lite.html">
     <style is="custom-style">
       html, body {
         width: 100%;
@@ -32,10 +33,30 @@
         /*height: 300px;*/
         height: calc(100% - 90px);
       }
-
       section{
         position: relative;
         height: 94%;
+      }
+      section paper-spinner-lite, section span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%);
+      }
+      section paper-spinner-lite {
+        --paper-spinner-stroke-width: 3px;
+        --paper-spinner-color: purple;
+      }
+      section span {
+        font-family: monospace;
+        font-size: 16px;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        visibility: hidden;
+      }
+      section span.shown{
+        opacity: 1;
+        visibility: visible;
       }
       footer{
         text-align: center;
@@ -52,6 +73,8 @@
         <div class="carousel">
           <carousel-selector num-items="[[items.length]]" selected-item="{{item}}"></carousel-selector>
           <vertical-carousel items=[[items]] current-item={{item}}></vertical-carousel>
+          <paper-spinner-lite id="spinner" alt="Loading carousel items" active></paper-spinner-lite>
+          <span id="dataErrorNetwork">It seems our data is unreachable</span>
         </div>
         <firebase-collection
           location="https://resplendent-heat-9951.firebaseio.com/"
@@ -63,5 +86,32 @@
     <footer>
       <a href="https://github.com/cvillarg/vertical-carousel-app">Fork me on GitHub</a>
     </footer>
+    <script type="text/javascript">
+      var success = false;
+      var failed = false;
+      window.addEventListener( "WebComponentsReady", function () {
+        //HTML Imports are loaded
+        var container = document.querySelector('.carousel');
+        var carousel = container.querySelector('vertical-carousel');
+        carousel.addEventListener('vertical-carousel-ready', function(){
+          success = true;
+          var spinner = container.querySelector('#spinner');
+          spinner.removeAttribute('active');
+          if (failed) {
+            var errorMessage = container.querySelector('#dataErrorNetwork');
+            errorMessage.classList.remove('shown')
+          }
+        });
+        setTimeout(function(){
+          if (!success) {
+            var spinner = container.querySelector('#spinner');
+            spinner.removeAttribute('active');
+            var errorMessage = container.querySelector('#dataErrorNetwork');
+            errorMessage.classList.add('shown')
+            failed = true;
+          }
+        }, 4000);
+      });
+    </script>
   </body>
 </html>

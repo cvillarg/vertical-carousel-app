@@ -35,39 +35,42 @@ The following custom properties and mixins are available for styling:
     overflow: hidden;
   }
   .content {
-    /*big enough so there isn't break lines*/
-    width: 9000px;
+    /*big enough so there isn't break lines
+    width: 9000px;*/
+    white-space: nowrap;
+    transition: transform 0.17s cubic-bezier(0.4, 0.0, 1, 1);
   }
 
-  .content div, nav{
+  .content div, nav div {
     display: inline-flex;
     height: 50px;
     width: 50px;
-    margin: 10px 5px;
     cursor: pointer;
   }
-
   .content div {
+    margin: 10px 5px;
     border-radius: 50%;
     background-color: #ccc;
   }
 
-  nav {
+  nav div {
     color: purple;
     background-color: #cac;
-    position: relative;
-    top: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     margin-right: 0;
   }
-
-  nav:last-child{
+  nav .previous {
+    background-color: #cac;
+    left: 5px;
+  }
+  nav .next {
     background-color: #aac;
-    position: absolute;
-    right: 0;
-    margin-right: 10px;
+    right: 5px;
   }
 
-  nav iron-icon{
+  nav iron-icon {
     margin: auto;
   }
 
@@ -76,19 +79,21 @@ The following custom properties and mixins are available for styling:
     color: white;
   }
 
-  div span{
+  div span {
     margin: auto;
   }
   </style>
   <template>
     <paper-card elevation="2">
-      <div class="content">
-        <nav on-tap="selectPrevious"><iron-icon icon="arrow-back"></iron-icon></nav>
+      <div id="content" class="content">
         <template is="dom-repeat" items=[[indexItems]]>
           <div on-tap="selectItem"><span>[[item]]</span></div>
         </template>
-        <nav on-tap="selectNext"><iron-icon icon="arrow-forward"></iron-icon></nav>
       </div>
+      <nav>
+        <div class="previous" on-tap="selectPrevious"><iron-icon icon="arrow-back"></iron-icon></div>
+        <div class="next" on-tap="selectNext"><iron-icon icon="arrow-forward"></iron-icon></div>
+      </nav>
     </paper-card>
   </template>
   <script>
@@ -118,9 +123,16 @@ The following custom properties and mixins are available for styling:
       },
 
       _onDomChanged: function() {
-        this.set('_itemNodes', this.querySelectorAll('.content div'));
+        var itemNodes = this.querySelectorAll('.content div')
+        this.set('_itemNodes', itemNodes);
         //update the view, refresh the value again..
         this._onItemSelectedChanged(this.selectedItem);
+        var calcWidth = this.numItems * (itemNodes[0].offsetWidth+10);
+        var content = this.$.content;
+        //console.log('width', calcWidth, 'node', content, 'parent', this, 'width', this.offsetWidth);
+        content.style['width'] = calcWidth + 'px';
+        //this._midPoint = this.offsetWidth/2>>0;
+        //this.updateStyles();
       },
 
       selectItem: function(e) {
@@ -128,10 +140,16 @@ The following custom properties and mixins are available for styling:
       },
 
       _onItemSelectedChanged: function(newValue, oldValue) {
-        this._itemNodes = this._itemNodes || [];
+        //console.log('n', newValue, 'o', oldValue)
+        if (newValue === undefined || this._itemNodes === undefined) return;
         //order matters. think of old === newValue
         this.toggleClass('selected', false, this._itemNodes[oldValue]);
         this.toggleClass('selected', true, this._itemNodes[newValue]);
+
+        var midPointParent = this.offsetWidth/2>>0
+        var midPointItem = ((this._itemNodes[newValue].offsetWidth+10)/2>>0) + (newValue * (this._itemNodes[newValue].offsetWidth+10));
+        //console.log('midPointParent', midPointParent, 'midPointItem', midPointItem, midPointParent - midPointItem + 'px');
+        this.transform('translateX(' + (midPointParent - midPointItem) + 'px' + ')', this.$.content);
       },
 
       selectPrevious: function() {
