@@ -136,8 +136,13 @@ The following custom properties and mixins are available for styling:
 
       _elevator: function(from, to){
         if (from !== to) { //avoid jitter
-          console.log('unlisten elevator');
-          this.unlisten(this, 'scroll', '_onScroll');
+          if (this._animation){
+            console.log('animation cancelled')
+            cancelAnimationFrame(this._animation);
+          } else {
+            console.log('unlisten elevator');
+            this.unlisten(this, 'scroll', '_onScroll');
+          }
           var duration = ( Math.abs(to - from) * 1.5);
           requestAnimationFrame( this._animateLoop(from, to, duration) );
         }
@@ -156,15 +161,16 @@ The following custom properties and mixins are available for styling:
           this.scrollTop = easedPosition;
 
           if( timeSoFar < duration ) {
-            requestAnimationFrame(aux.bind(this));
+            this._animation = requestAnimationFrame(aux.bind(this));
           } else {
             //animationFinished();
             //console.log('finished');
             setTimeout(function(){
               console.log('listen');
               this._itsMe = false;
+              this._animation = undefined;
               this.listen(this, 'scroll', '_onScroll');
-            }.bind(this),300);
+            }.bind(this), 17);
           }
         }.bind(this);
       }
